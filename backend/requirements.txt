@@ -1,0 +1,16 @@
+flask
+flask-cors
+psycopg2-binary
+gunicorn
+python-dotenv
+flask-sqlalchemy
+sqlalchemy
+requests
+pyjwt
+cryptography
+beautifulsoup4
+html5lib
+lxml
+pytest
+flask-migrate
+werkzeug
