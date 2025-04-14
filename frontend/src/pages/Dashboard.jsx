@@ -16,6 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import LinkCard from '../components/LinkCard';
 
 const Dashboard = () => {
   const [extLinks, setExtLinks] = useState([]);
@@ -35,12 +36,13 @@ const Dashboard = () => {
         const external = linksRes.data.filter(link => link.type === 'external');
         const internal = linksRes.data.filter(link => link.type === 'internal');
         
-        // Group internal links by category
+        // Group internal links by category, handling null/empty categories
         const groupedIntLinks = internal.reduce((acc, link) => {
-          if (!acc[link.category]) {
-            acc[link.category] = [];
+          const categoryKey = link.category || 'Uncategorized'; // Use 'Uncategorized' if null/empty
+          if (!acc[categoryKey]) {
+            acc[categoryKey] = [];
           }
-          acc[link.category].push(link);
+          acc[categoryKey].push(link);
           return acc;
         }, {});
         
@@ -90,42 +92,20 @@ const Dashboard = () => {
                 <TabPanel>
                   <VStack spacing={3} align="stretch">
                     {extLinks.map((link) => (
-                      <Link 
-                        key={link.id} 
-                        href={link.url} 
-                        target="_blank"
-                        p={3} 
-                        borderWidth="1px" 
-                        borderRadius="md" 
-                        borderColor={borderColor}
-                        display="block"
-                        _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
-                      >
-                        {link.title}
-                      </Link>
+                      <LinkCard key={link.id} link={link} />
                     ))}
                   </VStack>
                 </TabPanel>
                 <TabPanel>
-                  {Object.entries(intLinks).map(([category, links]) => (
+                  {/* Sort the category entries alphabetically before mapping */}
+                  {Object.entries(intLinks)
+                    .sort(([categoryA], [categoryB]) => categoryA.localeCompare(categoryB))
+                    .map(([category, links]) => (
                     <Box key={category} mb={4}>
                       <Heading size="sm" mb={2}>{category}</Heading>
                       <VStack spacing={2} align="stretch">
                         {links.map((link) => (
-                          <Link 
-                            key={link.id} 
-                            href={link.url} 
-                            target="_blank"
-                            p={2} 
-                            borderWidth="1px" 
-                            borderRadius="md" 
-                            borderColor={borderColor}
-                            display="block"
-                            fontSize="sm"
-                            _hover={{ bg: useColorModeValue('gray.50', 'gray.700') }}
-                          >
-                            {link.title}
-                          </Link>
+                          <LinkCard key={link.id} link={link} />
                         ))}
                       </VStack>
                     </Box>

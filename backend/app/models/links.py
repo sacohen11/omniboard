@@ -12,6 +12,7 @@ class Link(db.Model):
     active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    click_count = db.Column(db.Integer, nullable=False, default=0)
     
     def to_dict(self):
         return {
@@ -22,5 +23,6 @@ class Link(db.Model):
             'category': self.category,
             'active': self.active,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'click_count': self.click_count
         } 

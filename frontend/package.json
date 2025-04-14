@@ -9,23 +9,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
-    "axios": "^1.4.0",
-    "keycloak-js": "^21.1.1",
-    "chart.js": "^4.3.0",
-    "react-chartjs-2": "^5.2.0",
-    "@chakra-ui/react": "^2.7.1",
     "@chakra-ui/icons": "^2.0.19",
+    "@chakra-ui/react": "^2.7.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "framer-motion": "^10.12.16"
+    "axios": "^1.4.0",
+    "chart.js": "^4.3.0",
+    "framer-motion": "^10.12.16",
+    "keycloak-js": "^21.1.1",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.15.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
+    "@types/node": "^22.14.1",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
     "@vitejs/plugin-react": "^4.0.3",
+    "typescript": "^5.8.3",
     "vite": "^4.4.5"
   }
-} 
+}
