@@ -18,9 +18,9 @@ import {
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon, HamburgerIcon } from '@chakra-ui/icons';
 
-const Navbar = ({ login, logout, userRoles = [] }) => {
+const Navbar = ({ userRole }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const isAdmin = userRoles.includes('admin');
+  const isAdmin = userRole === 'admin';
 
   return (
     <Box
@@ -46,9 +46,11 @@ const Navbar = ({ login, logout, userRoles = [] }) => {
             <Link as={RouterLink} to="/" px={2} py={1} rounded={'md'}>
               Dashboard
             </Link>
-            <Link as={RouterLink} to="/admin/links" px={2} py={1} rounded={'md'}>
-              Manage Links
-            </Link>
+            {isAdmin && (
+              <Link as={RouterLink} to="/admin/links" px={2} py={1} rounded={'md'}>
+                Admin
+              </Link>
+            )}
           </HStack>
         </HStack>
 
@@ -74,10 +76,11 @@ const Navbar = ({ login, logout, userRoles = [] }) => {
               <MenuItem as={RouterLink} to="/">
                 Dashboard
               </MenuItem>
-              <MenuItem as={RouterLink} to="/admin/links">
-                Manage Links
-              </MenuItem>
-              <MenuItem onClick={logout}>Sign Out</MenuItem>
+              {isAdmin && (
+                <MenuItem as={RouterLink} to="/admin/links">
+                  Admin
+                </MenuItem>
+              )}
             </MenuList>
           </Menu>
         </Flex>

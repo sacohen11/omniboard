@@ -46,7 +46,7 @@ import {
 } from '@chakra-ui/icons';
 import axios from 'axios';
 
-const AdminLinks = ({ keycloak }) => {
+const AdminLinks = () => {
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -77,12 +77,7 @@ const AdminLinks = ({ keycloak }) => {
 
   const fetchLinks = async () => {
     try {
-      const token = keycloak.token;
-      const response = await axios.get('/api/admin/links', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get('/api/admin/links');
       setLinks(response.data);
       setLoading(false);
     } catch (err) {
@@ -139,17 +134,12 @@ const AdminLinks = ({ keycloak }) => {
     
     if (!validateForm()) return;
     
-    const token = keycloak.token;
     try {
       let response;
       
       if (editingId) {
         // Update existing link
-        response = await axios.put(`/api/admin/links/${editingId}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.put(`/api/admin/links/${editingId}`, formData);
         
         toast({
           title: 'Link updated',
@@ -159,11 +149,7 @@ const AdminLinks = ({ keycloak }) => {
         });
       } else {
         // Create new link
-        response = await axios.post('/api/admin/links', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        response = await axios.post('/api/admin/links', formData);
         
         toast({
           title: 'Link created',
@@ -213,12 +199,7 @@ const AdminLinks = ({ keycloak }) => {
     if (!deletingId) return;
     
     try {
-      const token = keycloak.token;
-      await axios.delete(`/api/admin/links/${deletingId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(`/api/admin/links/${deletingId}`);
       
       toast({
         title: 'Link deleted',

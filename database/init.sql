@@ -4,27 +4,12 @@
 -- Switch to the omniboard database
 \c omniboard;
 
--- Create extension for UUIDs
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create schema for the application
 CREATE SCHEMA IF NOT EXISTS public;
 
--- Create a separate database for Keycloak if it doesn't exist
--- PostgreSQL doesn't support IF NOT EXISTS in CREATE DATABASE
--- Use this instead
-DO
-$$
-BEGIN
-   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'keycloak') THEN
-      PERFORM pg_exec('CREATE DATABASE keycloak');
-   END IF;
-END
-$$;
-
 -- Create links table if it doesn't exist
 CREATE TABLE IF NOT EXISTS links (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     url VARCHAR(1024) NOT NULL,
     type VARCHAR(50) NOT NULL DEFAULT 'external',
@@ -36,7 +21,7 @@ CREATE TABLE IF NOT EXISTS links (
 
 -- Create documents table if it doesn't exist
 CREATE TABLE IF NOT EXISTS documents (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL,
     source_url VARCHAR(1024) NOT NULL,
@@ -46,6 +31,14 @@ CREATE TABLE IF NOT EXISTS documents (
     metadata_json TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Create users table if it doesn't exist
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'user')), -- Ensure role is either 'admin' or 'user'
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Initial data for links table
@@ -73,4 +66,13 @@ VALUES
     
     ('An Act To clarify the rights of Indians', 'h.r', 'https://www.congress.gov/bill/sample/indian-rights', 'enrolled', '2023-12-15', NOW(), NOW()),
     ('An Act To expand national parks', 'h.r', 'https://www.congress.gov/bill/sample/national-parks', 'enrolled', '2023-12-18', NOW(), NOW()),
-    ('Chesapeake and Ohio Canal Protection Act', 'h.r', 'https://www.congress.gov/bill/sample/chesapeake-ohio', 'enrolled', '2023-12-20', NOW(), NOW()); 
+    ('Chesapeake and Ohio Canal Protection Act', 'h.r', 'https://www.congress.gov/bill/sample/chesapeake-ohio', 'enrolled', '2023-12-20', NOW(), NOW());
+
+-- Initial data for users table (ensure at least one admin)
+-- Use a common function to insert if exists or update/ignore to prevent errors on re-runs
+-- For simplicity here, we assume it runs only once or the table is dropped/cleared before re-run.
+INSERT INTO users (name, role)
+VALUES
+    ('Alice Admin', 'admin'),
+    ('Bob User', 'user'),
+    ('Charlie User', 'user'); 

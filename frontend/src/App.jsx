@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Box } from '@chakra-ui/react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Box, Spinner, Center } from '@chakra-ui/react';
+import axios from 'axios';
 
 // Pages
 import Dashboard from './pages/Dashboard';
@@ -9,52 +10,54 @@ import Login from './pages/Login';
 
 // Components
 import Navbar from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
-
-// Mock authentication object to replace Keycloak
-const mockAuth = {
-  authenticated: true,
-  login: () => console.log('Login clicked - Authentication bypassed'),
-  logout: () => console.log('Logout clicked - Authentication bypassed'),
-  token: 'mock-token',
-  hasRealmRole: (role) => true, // Always return true for any role check
-  // Add any other methods your app might be using
-};
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(true); // Always authenticated
-  const [loading, setLoading] = useState(false);
-  const [userRoles, setUserRoles] = useState(['admin', 'user']); // Give all roles
+  const [authLoading, setAuthLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
 
-  // No need for authentication initialization
   useEffect(() => {
-    // Set up mock auth immediately
-    setAuthenticated(true);
-    setLoading(false);
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get('/api/auth/current-user');
+        setUserRole(response.data.role);
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        setUserRole('user');
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    fetchUserRole();
   }, []);
 
-  if (loading) {
-    return <Box>Loading...</Box>;
+  if (authLoading) {
+    return (
+      <Center h="100vh" bg="gray.900">
+        <Spinner size="xl" color="white" />
+      </Center>
+    );
   }
 
   return (
     <Router>
       <Box minH="100vh" bg="gray.900" color="white">
         <Navbar 
-          authenticated={authenticated}
-          login={() => mockAuth.login()}
-          logout={() => mockAuth.logout()}
-          userRoles={userRoles}
+          userRole={userRole}
         />
         <Box as="main" pt="60px">
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/admin/links" element={
-              <ProtectedRoute authenticated={authenticated} requiredRole="admin">
-                <AdminLinks keycloak={mockAuth} />
-              </ProtectedRoute>
-            } />
-            <Route path="/login" element={<Login keycloak={mockAuth} />} />
+            {userRole === 'admin' && (
+              <Route 
+                path="/admin/links" 
+                element={<AdminLinks />} 
+              />
+            )}
+            {userRole !== 'admin' && (
+              <Route path="/admin/links" element={<Navigate to="/" replace />} />
+            )}
+            <Route path="/login" element={<Login />} />
           </Routes>
         </Box>
       </Box>

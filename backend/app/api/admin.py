@@ -1,12 +1,11 @@
 from flask import Blueprint, jsonify, request
 from app.models.links import Link
 from app import db
-from app.utils.auth import token_required, admin_required
+from app.utils.auth import admin_required
 
 bp = Blueprint('admin', __name__)
 
 @bp.route('/links', methods=['GET'])
-@token_required
 @admin_required
 def get_all_links():
     """Get all links (active and inactive)."""
@@ -14,7 +13,6 @@ def get_all_links():
     return jsonify([link.to_dict() for link in links])
 
 @bp.route('/links', methods=['POST'])
-@token_required
 @admin_required
 def create_link():
     """Create a new link."""
@@ -37,7 +35,6 @@ def create_link():
     return jsonify(link.to_dict()), 201
 
 @bp.route('/links/<int:id>', methods=['GET'])
-@token_required
 @admin_required
 def get_link(id):
     """Get a specific link by ID."""
@@ -45,7 +42,6 @@ def get_link(id):
     return jsonify(link.to_dict())
 
 @bp.route('/links/<int:id>', methods=['PUT'])
-@token_required
 @admin_required
 def update_link(id):
     """Update a specific link."""
@@ -66,7 +62,6 @@ def update_link(id):
     return jsonify(link.to_dict())
 
 @bp.route('/links/<int:id>', methods=['DELETE'])
-@token_required
 @admin_required
 def delete_link(id):
     """Delete a specific link."""

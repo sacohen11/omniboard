@@ -11,7 +11,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 
-const Login = ({ keycloak }) => {
+const Login = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
